@@ -5,11 +5,15 @@ using UnityEngine;
 
 public class FinishHole : MonoBehaviour
 {
+    public static Color holeColor;
+    public SpriteRenderer holeSprite;
 
     // Start is called before the first frame update
     void Start()
     {
         RandomHolePos();
+
+        holeSprite.color = holeColor;   
     }
 
     // Update is called once per frame

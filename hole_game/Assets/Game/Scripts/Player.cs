@@ -1,28 +1,40 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
 using TMPro;
 using UnityEngine;
+using Color = UnityEngine.Color;
+using Random = UnityEngine.Random;
 
 public class Player : MonoBehaviour
 {
+    #region
     public GameObject finishHole;
     public GameObject gameManager;
 
     public float speed;
 
-    public bool leftCheck;
-    public bool rightCheck;
-    public bool upCheck;
-    public bool downCheck;
+    bool leftCheck;
+    bool rightCheck;
+    bool upCheck;
+    bool downCheck;
     
     float _inHoleTime;
     public float leftFinishTime = 3f;
+
+    public static Color playerColor;
+    public SpriteRenderer playerSprite;
+    #endregion
 
     // Start is called before the first frame update
     void Start()
     {
         // Random Start Position of the Player
         RandomPlayerPos();
+
+        // sets the color of the player
+        playerSprite.color = playerColor;
     }
 
     // Update is called once per frame
@@ -34,7 +46,7 @@ public class Player : MonoBehaviour
 
         PlayerOutOfCamera();
 
-        FinishTime();
+        LoseTime();
     }
 
     void Movement()
@@ -44,16 +56,6 @@ public class Player : MonoBehaviour
         float y = Input.GetAxis("Vertical") * speed * Time.deltaTime;
 
         transform.Translate(x, y, 0);
-
-        // Sprinting
-        if (Input.GetKey(KeyCode.LeftShift))
-        {
-            speed = 6;
-        }
-        else
-        {
-            speed = 3;
-        }
     }
 
     void HoleCheck()
@@ -126,13 +128,13 @@ public class Player : MonoBehaviour
             // Check if player is long enough in the hole to add Score, update player and hole position and update leftFinishTime
             if (_inHoleTime <= 0)
             {
+                FindObjectOfType<AudioManager>().Play("IncreaseHighscore");
                 gameManager.GetComponent<ScoreSystem>().AddScore();
                 RandomPlayerPos();
                 finishHole.GetComponent<FinishHole>().RandomHolePos();
                 leftFinishTime = 3f;
             }
         }
-        
         else
         {
             // Resets the time you have to be in the hole to get to the next level if you are out of the Hole
@@ -166,7 +168,7 @@ public class Player : MonoBehaviour
         }
     }
 
-    void FinishTime()
+    void LoseTime()
     {
         leftFinishTime -= Time.deltaTime;
 
@@ -175,5 +177,15 @@ public class Player : MonoBehaviour
         {
             Time.timeScale = 0;
         }
+    }
+
+    void Sprinting()
+    {
+        speed = 6;
+    }
+    
+    void NotSprinting()
+    {
+        speed = 3;
     }
 }
